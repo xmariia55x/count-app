@@ -1,0 +1,21 @@
+{
+  "name": "count-app",
+  "version": "0.0.1",
+  "description": "A node project that exposes a REST API.",
+  "main": "main.ts",
+  "scripts": {
+    "build": "rm -rf dist && tsc --project tsconfig.json",
+    "start": "npm run build && node ./dist/main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maria Galvez",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}
