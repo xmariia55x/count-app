@@ -6,16 +6,26 @@
   "scripts": {
     "build": "rm -rf dist && tsc --project tsconfig.json",
     "start": "npm run build && node ./dist/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "TZ=UTC jest"
   },
   "author": "Maria Galvez",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "lodash": "^4.17.21",
+    "redis": "^4.6.13"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.12.7",
+    "jest": "^29.7.0",
+    "jest-extended": "^4.0.2",
+    "jest-junit": "^16.0.0",
+    "redis-mock": "^0.56.3",
+    "supertest": "^6.3.4",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.4.5"
   }
 }
