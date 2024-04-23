@@ -14,8 +14,8 @@ export default function createServer(redis): express.Application {
 
     expressApp.get('/count', async (_, res: Response) => {
       const count = await getData(redis, 'count');
-      console.log(count);
-      res.send(count);
+      console.log(`Current count is ${count}`);
+      res.send(count ?? 'Count key was not found on Redis');
     });
 
     expressApp.post('/track', async (req: Request, res: Response) => { 
@@ -36,6 +36,7 @@ export default function createServer(redis): express.Application {
           storeData(redis, 'count', parseInt(data.count) + parseInt(count) ?? 0);
           message += 'data was stored into Redis DB';
         } else {
+          console.log('Data does not include a count key');
           message += 'data could not be stored into Redis DB since it does not include a count key';
         }
   
@@ -45,7 +46,6 @@ export default function createServer(redis): express.Application {
       }
       res.send(message);
     });
-
 
     expressApp.use('*', (req: Request, res: Response, next: NextFunction) => {
       try {
