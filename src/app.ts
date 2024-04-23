@@ -4,7 +4,6 @@ import express, { NextFunction, Request, Response } from "express";
 import _ from "lodash";
 
 import config from "./config";
-import { getData, storeData } from "./db/client";
 import { loadData, exportData } from "./utils/files";
 
 export default function createServer(redis): express.Application {
@@ -16,10 +15,19 @@ export default function createServer(redis): express.Application {
   expressApp.get("/health", (_, res: Response) => res.sendStatus(200));
 
   expressApp.get("/count", async (_, res: Response) => {
-    const count = await getData(redis, "count");
+    const count = await redis.getData("count");
     const actualCount = parseInt(count);
-    console.log(`Current count is ${!isNaN(actualCount) ? actualCount : 0}`);
-    res.send(count ?? "Count key was not found on Redis");
+
+    let message = "";
+    if (!isNaN(actualCount)) {
+      message += `Current count is ${actualCount}`;
+    } else {
+      message += "Count key was not found on Redis";
+    }
+
+    console.log(message);
+
+    res.send(message);
   });
 
   expressApp.post("/track", async (req: Request, res: Response) => {
@@ -36,15 +44,14 @@ export default function createServer(redis): express.Application {
       exportData(fileName, mergedData);
 
       if (data.count) {
-        const count = await getData(redis, "count");
+        const count = await redis.getData("count");
         const actualCount = parseInt(count);
         const redisCount = !isNaN(actualCount) ? actualCount : 0;
         const totalAmount = parseInt(data.count) + redisCount;
 
-        storeData(redis, "count", totalAmount);
+        redis.storeData("count", totalAmount);
         message += "data was stored into Redis DB";
       } else {
-        console.log("Data does not include a count key");
         message +=
           "data could not be stored into Redis DB since it does not include a count key";
       }
@@ -53,6 +60,9 @@ export default function createServer(redis): express.Application {
     } else {
       message += "Data must be a valid JSON object";
     }
+
+    console.log(message);
+
     res.send(message);
   });
 

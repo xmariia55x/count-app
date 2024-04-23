@@ -12,13 +12,21 @@ export async function createRedisClient(config) {
   return client;
 }
 
-export async function storeData(client, key, value) {
-  await client.set(key, value, function (err, reply) {
-    console.log(reply); // OK
-  });
-}
+export default class RedisClient {
+  private redisClient: any;
 
-export async function getData(client, key) {
-  const reply = await client.get(key);
-  return reply;
+  constructor(dbClient) {
+    this.redisClient = dbClient;
+  }
+
+  async storeData(key, value) {
+    await this.redisClient.set(key, value, function (err, reply) {
+      console.log(reply); // OK
+    });
+  }
+
+  async getData(key) {
+    const reply = await this.redisClient.get(key);
+    return reply;
+  }
 }

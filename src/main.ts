@@ -1,11 +1,12 @@
 import createServer from "./app";
 import config from "./config";
-import { createRedisClient } from "./db/client";
+import RedisClient, { createRedisClient } from "./db/client";
 
 async function start() {
   const { port } = config.app;
-  const redis = await createRedisClient(config.redis);
-  const application = createServer(redis);
+  const redisInstance = await createRedisClient(config.redis);
+  const redisClient = new RedisClient(redisInstance);
+  const application = createServer(redisClient);
   application.listen(port, () => {
     console.log(`App listening on ${port}`);
   });
