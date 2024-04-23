@@ -10,6 +10,9 @@ A node project that exposes a REST API with 3 endpoints:
 
 `/track` POST endpoint to store data received from the request body to a local file and update a count key in a DB.
 
+It is worth mentioning that the workflows may not be executed if I do not have access to certain runners.
+
+This project uses node 20.
 
 ### Assumptions
 
@@ -32,7 +35,7 @@ Reduce complexity of the createServer function.
 Once you have cloned this repository into your machine, there are 2 options to run the application:
 
 - With NPM and Docker
-- With NPM, node and a redis database up and running
+- With NPM, node (v20) and a redis database up and running
 
 ### Steps to deploy using Docker
 
@@ -42,7 +45,7 @@ Then you just have to run `npm run deploy:docker`.
 
 This will create a docker project where a redis DB and the API will be running. The API exposes the port 3000 in order to be reachable from outside the container. 
 
-### Steps to deploy using NPM, node and a redis database
+### Steps to deploy using NPM, node (v20) and a redis database
 
 I assume that you already have a redis DB up and running and listening in a certain port, let's say the default one (6379). 
 

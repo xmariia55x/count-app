@@ -2,8 +2,7 @@ on:
   push:
     branches:
       - main
-permissions: 
-  id-token: write # This is required for requesting the JWT
+permissions:
   contents: read  # This is required for actions/checkout
 env:
   NODE_VERSION: 20.10.0
