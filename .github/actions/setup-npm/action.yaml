@@ -1,0 +1,11 @@
+name: 'Setup NPM'
+description: 'Installs NPM'
+runs:
+  using: 'composite'
+  steps:
+    - uses: npm/action-setup@v2
+      with:
+        version: ${{env.NPM_VERSION}}
+    - name: Check NPM
+      shell: bash
+      run: npm -v

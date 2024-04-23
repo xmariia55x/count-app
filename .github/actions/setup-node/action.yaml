@@ -1,0 +1,12 @@
+name: 'Setup Node'
+description: 'Installs node'
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{env.NODE_VERSION}}
+        token: ${{ env.GH_TOKEN }}
+    - name: Check Node
+      shell: bash
+      run: node -v
