@@ -1,11 +1,13 @@
-import request from "supertest";
-
 import createServer from "../../src/app";
+import config from "../../src/config";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const request = require("supertest");
 
 // Mock of Redis DB
 const mockRedis = {
-  get: jest.fn(),
-  set: jest.fn(),
+  getData: jest.fn(),
+  storeData: jest.fn(),
 };
 
 // Mock of the files functions
@@ -16,17 +18,14 @@ jest.mock("../../src/utils/files", () => ({
   exportData: jest.fn(),
 }));
 
-// Mock of the DB functions
-jest.mock("../../src/db/client", () => ({
-  __esModule: true,
-  getData: jest.fn(),
-  storeData: jest.fn(),
-}));
-
 describe("API endpoints", () => {
   let app;
 
   beforeEach(() => {
+    config.app.port = 3000;
+    config.file = "sample.json";
+    config.redis.host = "127.0.0.1";
+    config.redis.port = 6379;
     app = createServer(mockRedis);
   });
 
@@ -40,17 +39,24 @@ describe("API endpoints", () => {
   });
 
   it("should respond with correct count on /count", async () => {
-    mockRedis.get.mockResolvedValue(10); // Mock the value returned by Redis
+    mockRedis.getData.mockResolvedValue(10); // Mock the value returned by Redis
     const response = await request(app).get("/count");
     expect(response.status).toBe(200);
-    expect(response.body).toBe(10);
+    expect(response.text).toBe("Current count is 10");
+  });
+
+  it("should return key does not exist when it is not stored in Redis on /count", async () => {
+    mockRedis.getData.mockResolvedValue(null);
+    const response = await request(app).get("/count");
+    expect(response.status).toBe(200);
+    expect(response.text).toBe("Count key was not found on Redis");
   });
 
   it("should store data in Redis and local file on /track", async () => {
     const requestData = { count: 5 };
-    mockRedis.get.mockResolvedValue(10); // Mock the value returned by Redis
+    mockRedis.getData.mockResolvedValue(10); // Mock the value returned by Redis
     await request(app).post("/track").send(requestData);
-    expect(mockRedis.set).toHaveBeenCalledWith("count", 15); // Check that set was called with the correct value
+    expect(mockRedis.storeData).toHaveBeenCalledWith("count", 15); // Check that set was called with the correct value
     // Check that it was properly exported to an external file
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     expect(require("../../src/utils/files").exportData).toHaveBeenCalledWith(
